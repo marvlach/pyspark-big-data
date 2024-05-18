@@ -7,6 +7,7 @@ The datasets:
 - [LA Police Stations data](https://geohub.lacity.org/datasets/lahub::lapd-police-stations/explore)
 - [Median Household Income by Zip Code (Los Angeles County) and Reverse Geocoding](http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz)
 
+## Setup Datasets
 
 ### Download datasets
 ```
@@ -119,3 +120,12 @@ spark-submit csv_to_parquet.py crime_data_2020s.csv
 ```
 
 ![big_parquets_in_hdfs](https://github.com/marvlach/pyspark-big-data/assets/59962578/69886aa2-3710-4563-afb3-4454c64b496b)
+
+## Query 1
+
+To run query1.py you need to provide 2 arguments: the fileformat from which the data will be loaded from hdfs(csv or parquet) and the pyspark API used to run the query(df or sql):
+
+```
+spark-submit test_script.py csv df
+spark-submit test_script.py parquet df
+```
