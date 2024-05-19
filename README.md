@@ -123,9 +123,13 @@ spark-submit csv_to_parquet.py crime_data_2020s.csv
 
 ## Query 1
 
-To run query1.py you need to provide 2 arguments: the fileformat from which the data will be loaded from hdfs(csv or parquet) and the pyspark API used to run the query(df or sql):
+To run query1.py you need to provide 2 arguments: the fileformat from which the data will be loaded from hdfs(csv or parquet) and the pyspark API used to run the query(mr or sql):
 
 ```
-spark-submit test_script.py csv df
-spark-submit test_script.py parquet df
+spark-submit query1.py csv mr
+spark-submit query1.py parquet mr
+spark-submit query1.py csv sql
+spark-submit query1.py parquet sql
 ```
+
+The results can be found in query1.txt
