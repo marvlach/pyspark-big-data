@@ -1,10 +1,16 @@
 from pyspark.sql import SparkSession
 import sys
 import time
+from pyspark.sql.functions import col
+from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number
 
 
 def read_from_csv(spark):
-
+    """
+    Reads 2 csvs into dataframes, unions them
+    and returns one dataframe
+    """
     df1 = spark.read.csv(
         "hdfs://master:9000/home/user/datasets/crime_data_2010s.csv",
         header=True,
@@ -21,6 +27,10 @@ def read_from_csv(spark):
 
 
 def read_from_parquet(spark):
+    """
+    Reads parquet chunks from 2 hdfs directories
+    and returns a dataframe
+    """
     paths = [
         "hdfs://master:9000/home/user/datasets/crime_data_2010s.parquet",
         "hdfs://master:9000/home/user/datasets/crime_data_2020s.parquet",
@@ -29,7 +39,18 @@ def read_from_parquet(spark):
     return df
 
 
-def query_mr(df):
+def query_rdd(df):
+    """
+    Turns the Dataframe into an RDD
+    and performs Map-Reduce-like operations
+
+    Args:
+        - df: a spark Dataframe
+
+    Prints:
+        The result
+
+    """
     query = (
         df.rdd.map(
             lambda row: (
@@ -55,18 +76,29 @@ def query_mr(df):
 
 
 def query_sql(df, spark):
+    """
+    Takes a Dataframe, register a SQL-like table from it
+    and executes the query in raw SQL
+
+    Args:
+        - df: a spark Dataframe
+        - spark: spark session
+
+    Prints:
+        The result
+    """
     df.registerTempTable("crimes")
     query = """
-    select month, year, count, rank
-    from (
-        select 
-            month,
+    SELECT year, month, count, rank
+    FROM (
+        SELECT 
             year,
+            month,
             count,
             row_number() over (partition by year order by count desc) rank
-            from (
-                SELECT month, year, count(*) as count
-                from (
+            FROM (
+                SELECT year, month, count(*) as count
+                FROM (
                     SELECT 
                         substring(`Date Rptd`, 7, 4) as year,
                         substring(`Date Rptd`, 0,2) as month 
@@ -75,12 +107,42 @@ def query_sql(df, spark):
                 GROUP BY year, month
         ) ymc
     )
-    where rank < 4
-    order by year ASC, rank ASC
+    WHERE rank < 4
+    ORDER BY year ASC, rank ASC
     """
 
     res = spark.sql(query)
     res.show(50)
+
+
+def query_df(df):
+    """
+    Takes a Dataframe and executes the query with
+    Dataframe-ORM-like API. Definetely the worst of the bunch.
+
+    Args:
+        - df: a spark Dataframe
+
+    Prints:
+        The result
+    """
+    result = (
+        (
+            df.withColumns(
+                {"year": df["Date Rptd"][7:4], "month": df["Date Rptd"][0:2]}
+            )
+            .select(col("year"), col("month"))
+            .groupBy(col("year"), col("month"))
+            .count()
+        )
+        .withColumn(
+            "rank",
+            row_number().over(Window.partitionBy("year").orderBy(col("count").desc())),
+        )
+        .filter(col("rank") < 4)
+        .orderBy(col("year").asc(), col("rank").asc())
+    )
+    result.show(50)
 
 
 def main(file_format, spark_api):
@@ -94,10 +156,12 @@ def main(file_format, spark_api):
     df = read_from_csv(spark) if file_format == "csv" else read_from_parquet(spark)
 
     # query based on user-defined spark api
-    if spark_api == "mr":
-        query_mr(df)
-    else:
+    if spark_api == "rdd":
+        query_rdd(df)
+    elif spark_api == "sql":
         query_sql(df, spark)
+    else:
+        query_df(df)
 
     print("time elapsed", time.time() - start_time)
     spark.stop()
@@ -113,8 +177,10 @@ if __name__ == "__main__":
         print("Usage: First argument must be literals: csv or parquet", file=sys.stderr)
         sys.exit(-1)
 
-    if spark_api not in {"mr", "sql"}:
-        print("Usage: Second argument must be literals: mr or sql", file=sys.stderr)
+    if spark_api not in {"df", "sql", "rdd"}:
+        print(
+            "Usage: Second argument must be literals: df or sql or rdd", file=sys.stderr
+        )
         sys.exit(-1)
 
     main(file_format, spark_api)

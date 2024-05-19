@@ -121,15 +121,31 @@ spark-submit csv_to_parquet.py crime_data_2020s.csv
 
 ![big_parquets_in_hdfs](https://github.com/marvlach/pyspark-big-data/assets/59962578/69886aa2-3710-4563-afb3-4454c64b496b)
 
-## Query 1
+## Queries
+For the next queries we will be using 2 different ways to load the datasets into Spark engine: csv and parquet. 
 
-To run query1.py you need to provide 2 arguments: the fileformat from which the data will be loaded from hdfs(csv or parquet) and the pyspark API used to run the query(mr or sql):
+Spark provides two ways to represent a dataset: the Dataframe and the RDD. 
+
+- When the dataset is in Dataframe form we can use 2 different APIs to execute queries:
+
+    - The native Spark dataframe API(df) provides high-level methods similar to an ORM or Pandas.
+    - The SQL API(sql) provides a way to write raw SQL queries after registering the dataframe as a temporary SQL Table 
+
+- When the dataset is in RDD(rdd) form we use the Map-Reduce API to perform queries.
+
+### Query 1
+
+To run query1.py you need to provide 2 arguments: the fileformat from which the data will be loaded from hdfs(csv or parquet) and the pyspark API used to run the query(rdd, sql or df):
 
 ```
-spark-submit query1.py csv mr
-spark-submit query1.py parquet mr
+spark-submit query1.py csv rdd
+spark-submit query1.py parquet rdd
+
 spark-submit query1.py csv sql
 spark-submit query1.py parquet sql
+
+spark-submit query1.py csv df
+spark-submit query1.py parquet df
 ```
 
 The results can be found in query1.txt
