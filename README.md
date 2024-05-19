@@ -149,3 +149,16 @@ spark-submit query1.py parquet df
 ```
 
 The results can be found in query1.txt
+
+
+### Query 2
+
+To run query2.py you need to provide 1 argument: the pyspark API used to run the query(rdd, sql or df):
+
+```
+spark-submit query2.py rdd
+spark-submit query2.py sql
+spark-submit query2.py df
+```
+
+The results can be found in query1.txt
