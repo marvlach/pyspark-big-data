@@ -54,7 +54,7 @@ def query_rdd(df):
     query = (
         df.rdd.map(
             lambda row: (
-                (row["Date Rptd"][6:10], row["Date Rptd"][:2]),
+                (row["DATE OCC"][6:10], row["DATE OCC"][:2]),
                 1,
             )
         )  # ((year, month), 1)
@@ -100,8 +100,8 @@ def query_sql(df, spark):
                 SELECT year, month, count(*) as count
                 FROM (
                     SELECT 
-                        substring(`Date Rptd`, 7, 4) as year,
-                        substring(`Date Rptd`, 0,2) as month 
+                        substring(`DATE OCC`, 7, 4) as year,
+                        substring(`DATE OCC`, 0,2) as month 
                     FROM crimes
                 ) crimes_ym
                 GROUP BY year, month
@@ -129,7 +129,7 @@ def query_df(df):
     result = (
         (
             df.withColumns(
-                {"year": df["Date Rptd"][7:4], "month": df["Date Rptd"][0:2]}
+                {"year": df["DATE OCC"][7:4], "month": df["DATE OCC"][0:2]}
             )
             .select(col("year"), col("month"))
             .groupBy(col("year"), col("month"))
