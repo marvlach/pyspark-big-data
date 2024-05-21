@@ -1,0 +1,72 @@
+RESULTS without transforming ZIP-4 code
+
+# TOP
++--------------------+-----+
+|      Victim Descent|count|
++--------------------+-----+
+|               White|  338|
+|               Other|  106|
+|Hispanic/Latin/Me...|   52|
+|             Unknown|   27|
+|               Black|   16|
+|         Other Asian|   16|
++--------------------+-----+
+
+top 3 income zips: ['90272', '90077', '90274']
+time elapsed 38.461299419403076
+
+# BOT
++--------------------+-----+
+|      Victim Descent|count|
++--------------------+-----+
+|Hispanic/Latin/Me...| 1531|
+|               Black| 1092|
+|               White|  703|
+|               Other|  393|
+|         Other Asian|  103|
+|             Unknown|   64|
+|              Korean|    9|
+|American Indian/A...|    3|
+|            Japanese|    3|
+|             Chinese|    2|
+|            Filipino|    1|
++--------------------+-----+
+
+bot 3 income zips: ['90021', '90058', '90013']
+time elapsed 47.850188970565796
+
+RESULTS with transforming ZIP-4 code
+
+# TOP
++--------------------+-----+
+|      Victim Descent|count|
++--------------------+-----+
+|               White|  347|
+|               Other|  110|
+|Hispanic/Latin/Me...|   55|
+|             Unknown|   32|
+|               Black|   18|
+|         Other Asian|   16|
++--------------------+-----+
+
+top 3 income zips: ['90272', '90077', '90274']
+# BOT
++--------------------+-----+
+|      Victim Descent|count|
++--------------------+-----+
+|Hispanic/Latin/Me...| 1550|
+|               Black| 1093|
+|               White|  705|
+|               Other|  400|
+|         Other Asian|  104|
+|             Unknown|   65|
+|              Korean|    9|
+|American Indian/A...|    3|
+|            Japanese|    3|
+|             Chinese|    2|
+|            Filipino|    2|
++--------------------+-----+
+
+bot 3 income zips: ['90021', '90058', '90013']
+time elapsed 32.37467551231384
+
