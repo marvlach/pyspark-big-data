@@ -70,3 +70,33 @@ top 3 income zips: ['90272', '90077', '90274']
 bot 3 income zips: ['90021', '90058', '90013']
 time elapsed 32.37467551231384
 
+# JOIN STRATEGIES
+# top/bot hint_crimes_revgeo hint_revgeo_income
+
+# top optimal(BroadcastHashJoin BuildRight) optimal(BroadcastHashJoin BuildRight)
+- time elapsed 38.61370348930359
+- pyspark history server 42 s
+
+# top merge optimal(BroadcastHashJoin)
+- time elapsed 37.06198525428772
+- pyspark history server 40 s
+
+# top shuffle_hash(BuildRight) optimal(BroadcastHashJoin BuildRight)
+- time elapsed 47.81620264053345
+- pyspark history server 51 s
+
+# top shuffle_replicate_nl(does crossjoin) optimal(BroadcastHashJoin BuildRight)
+- time elapsed 427.820237159729
+- pyspark history server 7.2 min
+
+# top optimal merge
+- time elapsed 42.91420221328735
+- pyspark history server 47 s
+
+# top optimal shuffle_hash
+- time elapsed 36.15712547302246
+- pyspark history server 40 s
+
+# top optimal shuffle_replicate_nl(also does CartesianProduct but it's smaller)
+- time elapsed 44.6536500453949
+- pyspark history server 48 s

@@ -34,25 +34,14 @@ def get_descent_df(spark):
 
 def get_crimes_df(spark):
     """
-    Filter rows that have Vict Descent(not null, not '-')
+    - Filter rows that have Vict Descent(not null, not '-')
 
-    LAT LON always exist
-
-    ```
-    print(
-        crimes_df.filter(
-            (col('LAT').isNull()) |
-            (col('LON').isNull())
-        ).distinct().count()
-    ) # result 0
-    ```
+    - LAT LON always exist
     """
-    paths = [
-        "hdfs://master:9000/home/user/datasets/crime_data_2010s.parquet",
-        "hdfs://master:9000/home/user/datasets/crime_data_2020s.parquet",
-    ]
     crimes_df = (
-        spark.read.parquet(*paths)
+        spark.read.parquet(
+            "hdfs://master:9000/home/user/datasets/crime_data_2010s.parquet"
+        )
         .filter((col("Vict Descent") != "-") & (col("Vict Descent").isNotNull()))
         # this slice [7:4] isn't python; it's overloaded
         .filter(col("DATE OCC")[7:4] == "2015")
@@ -78,7 +67,7 @@ def get_income_df(spark):
         .withColumn("Zip Code", col("Zip Code").cast("string"))
         .withColumn(
             "Estimated Median Income",
-            regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("double"),
+            regexp_replace(col("Estimated Median Income"), "[$,]", "").cast("float"),
         )
         .withColumnRenamed("Zip Code", "ZIPcode")
     )
@@ -97,20 +86,22 @@ def get_revgecoding_df(spark):
     followed by a hyphen and four digits that designated a more specific location.".
     We drop these last 4 digits.
     BEWARE: THIS AFFECTS THE QUERY RESULTS
-    
+
     """
     revgeo_df = (
         spark.read.parquet(
             "hdfs://master:9000/home/user/datasets/revgecoding.parquet"
         ).filter(col("ZIPcode").isNotNull())
-        #.withColumn("ZIPcode", col("ZIPcode")[0:5]) # this affects query result
+        # .withColumn("ZIPcode", col("ZIPcode")[0:5]) # this affects query result
         .withColumn("ZIPcode", col("ZIPcode"))
     )
     return revgeo_df
 
 
-def main(income):
-    spark = SparkSession.builder.appName("read_and_print").getOrCreate()
+def main(income, hint_crimes_revgeo, hint_revgeo_income):
+    spark = SparkSession.builder.appName(
+        f"query3 {income} {hint_crimes_revgeo} {hint_revgeo_income}"
+    ).getOrCreate()
     start_time = time.time()
 
     # get dataframes
@@ -123,11 +114,14 @@ def main(income):
     victim_descend_df = get_descent_df(spark)
 
     # inner join to avoid NULL ZIPcode
-    crimes_join_revgeo_df = crimes_df.join(revgeo_df, ["LAT", "LON"])
+    crimes_join_revgeo_df = crimes_df.join(
+        revgeo_df if hint_crimes_revgeo is None else revgeo_df.hint(hint_crimes_revgeo),
+        ["LAT", "LON"],
+    )
 
     # inner join to avoid NULL Estimated Median Income
     crimes_join_revgeo_join_income_df = crimes_join_revgeo_df.join(
-        income_df,
+        income_df if hint_revgeo_income is None else income_df.hint(hint_revgeo_income),
         "ZIPcode",
     )
 
@@ -156,6 +150,7 @@ def main(income):
     )
 
     result.show(50)
+    result.explain()
     print(f"{income} 3 income zips: {where_zips}")
     print("time elapsed", time.time() - start_time)
 
@@ -164,14 +159,36 @@ def main(income):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
-        print("Usage: query2.py top/bot", file=sys.stderr)
+    if len(sys.argv) != 4:
+        print(
+            "Usage: query2.py top/bot hint_crimes_revgeo hint_revgeo_income",
+            file=sys.stderr,
+        )
         sys.exit(-1)
 
-    _, income = sys.argv
+    _, income, hint_crimes_revgeo, hint_revgeo_income = sys.argv
 
     if income not in {"bot", "top"}:
         print("Usage: Argument must be literals: top or bot", file=sys.stderr)
         sys.exit(-1)
 
-    main(income)
+    join_options = {
+        "broadcast",
+        "merge",
+        "shuffle_hash",
+        "shuffle_replicate_nl",
+        "optimal",
+    }
+    if hint_crimes_revgeo not in join_options:
+        print(f"Usage: Argument must be literals in {join_options}", file=sys.stderr)
+        sys.exit(-1)
+
+    hint_crimes_revgeo = None if hint_crimes_revgeo == "optimal" else hint_crimes_revgeo
+
+    if hint_revgeo_income not in join_options:
+        print(f"Usage: Argument must be literals in {join_options}", file=sys.stderr)
+        sys.exit(-1)
+
+    hint_revgeo_income = None if hint_revgeo_income == "optimal" else hint_revgeo_income
+
+    main(income, hint_crimes_revgeo, hint_revgeo_income)
