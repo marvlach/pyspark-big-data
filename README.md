@@ -4,7 +4,7 @@ The datasets:
 
 - [Crime data 2010s](https://data.lacity.org/api/views/63jg-8b9z/rows.csv?accessType=DOWNLOAD)
 - [Crime data 2020s](https://data.lacity.org/api/views/2nrs-mtv8/rows.csv?accessType=DOWNLOAD)
-- [LA Police Stations data](https://geohub.lacity.org/datasets/lahub::lapd-police-stations/explore)
+- [LA Police Stations data](https://geohub.lacity.org/datasets/lahub::lapd-police-stations/explore) The dataset was later replaced by data given by the course team.
 - [Median Household Income by Zip Code (Los Angeles County) and Reverse Geocoding](http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz)
 
 ## Setup Datasets
@@ -46,6 +46,8 @@ On master:
 ```
 mv LAPD_Police_Stations_-3946316159051949741.csv LAPD_Police_Stations.csv
 ```
+
+The dataset was later replaced by data given by the course team.
 
 - Download Median Household Income by Zip Code (Los Angeles County) and Reverse Geocoding:
 Download and extract from tar. Move .csv files to top level.
@@ -161,4 +163,32 @@ spark-submit query2.py sql
 spark-submit query2.py df
 ```
 
-The results can be found in query1.txt
+The results can be found in query2.txt
+
+
+### Query 3
+
+To run query3.py you need to provide 3 argument: 
+
+- whether to run for top 3 or bottom 3  income zip codes: top/bot
+- the join strategy of the join between crimes and reverse geocode datasets: broadcast/merge/shuffle_hash/shuffle_replicate_nl/optimal
+- the join strategy of the join between reverse geocode and income datasets: broadcast/merge/shuffle_hash/shuffle_replicate_nl/optimal
+
+```
+spark-submit query3.py top optimal optimal
+spark-submit query3.py bot optimal optimal
+spark-submit query3.py top optimal merge
+spark-submit query3.py top merge optimal
+```
+
+The results can be found in query3.txt
+
+
+### Query 4
+
+For query 4, the geopy library is needed in the Spark python venv. On both pyspark master and slave nodes:
+
+```
+python3.8 -m pip install geopy
+```
+
