@@ -10,6 +10,7 @@ The datasets:
 ## Setup Datasets
 
 ### Download datasets
+
 ```
 mkdir dataset_downloads
 cd dataset_downloads
@@ -38,11 +39,13 @@ mv rows.csv\?accessType\=DOWNLOAD crime_data_2020s.csv
 We visit the website https://geohub.lacity.org/datasets/lahub::lapd-police-stations/explore and download locally in csv format. Then upload to okeanos master server with scp and rename the file to something simpler
 
 On local:
+
 ```
 scp ./LAPD_Police_Stations_-3946316159051949741.csv user@83.212.80.87:~/dataset_downloads
 ```
 
 On master:
+
 ```
 mv LAPD_Police_Stations_-3946316159051949741.csv LAPD_Police_Stations.csv
 ```
@@ -50,7 +53,7 @@ mv LAPD_Police_Stations_-3946316159051949741.csv LAPD_Police_Stations.csv
 The dataset was later replaced by data given by the course team.
 
 - Download Median Household Income by Zip Code (Los Angeles County) and Reverse Geocoding:
-Download and extract from tar. Move .csv files to top level.
+  Download and extract from tar. Move .csv files to top level.
 
 ```
 wget http://www.dblab.ece.ntua.gr/files/classes/data.tar.gz
@@ -59,6 +62,7 @@ mv ./income/*.csv ./
 ```
 
 ### Put datasets in Hadoop hdfs
+
 Create HDFS datasets directory on ~/
 
 ```
@@ -88,12 +92,11 @@ spark-submit csv_to_parquet.py LAPD_Police_Stations.csv
 ```
 
 It creates a directory in hdfs /LAPD_Police_Stations.parquet. The directory holds 2 files:
-- _SUCCESS
+
+- \_SUCCESS
 - /part-00000-475387d6-f799-40b1-849c-6bbaae08c1bc-c000.snappy.parquet
 
-
-
-It can be read in spark like 
+It can be read in spark like
 
 ```
 sc.read.parquet(
@@ -124,14 +127,15 @@ spark-submit csv_to_parquet.py crime_data_2020s.csv
 ![big_parquets_in_hdfs](https://github.com/marvlach/pyspark-big-data/assets/59962578/69886aa2-3710-4563-afb3-4454c64b496b)
 
 ## Queries
-For the next queries we will be using 2 different ways to load the datasets into Spark engine: csv and parquet. 
 
-Spark provides two ways to represent a dataset: the Dataframe and the RDD. 
+For the next queries we will be using 2 different ways to load the datasets into Spark engine: csv and parquet.
+
+Spark provides two ways to represent a dataset: the Dataframe and the RDD.
 
 - When the dataset is in Dataframe form we can use 2 different APIs to execute queries:
 
-    - The native Spark dataframe API(df) provides high-level methods similar to an ORM or Pandas.
-    - The SQL API(sql) provides a way to write raw SQL queries after registering the dataframe as a temporary SQL Table 
+  - The native Spark dataframe API(df) provides high-level methods similar to an ORM or Pandas.
+  - The SQL API(sql) provides a way to write raw SQL queries after registering the dataframe as a temporary SQL Table
 
 - When the dataset is in RDD(rdd) form we use the Map-Reduce API to perform queries.
 
@@ -152,7 +156,6 @@ spark-submit query1.py parquet df
 
 The results can be found in query1.txt
 
-
 ### Query 2
 
 To run query2.py you need to provide 1 argument: the pyspark API used to run the query(rdd, sql or df):
@@ -165,12 +168,11 @@ spark-submit query2.py df
 
 The results can be found in query2.txt
 
-
 ### Query 3
 
-To run query3.py you need to provide 3 argument: 
+To run query3.py you need to provide 3 argument:
 
-- whether to run for top 3 or bottom 3  income zip codes: top/bot
+- whether to run for top 3 or bottom 3 income zip codes: top/bot
 - the join strategy of the join between crimes and reverse geocode datasets: broadcast/merge/shuffle_hash/shuffle_replicate_nl/optimal
 - the join strategy of the join between reverse geocode and income datasets: broadcast/merge/shuffle_hash/shuffle_replicate_nl/optimal
 
@@ -183,7 +185,6 @@ spark-submit query3.py top merge optimal
 
 The results can be found in query3.txt
 
-
 ### Query 4
 
 For query 4, the geopy library is needed in the Spark python venv. On both pyspark master and slave nodes:
@@ -192,3 +193,11 @@ For query 4, the geopy library is needed in the Spark python venv. On both pyspa
 python3.8 -m pip install geopy
 ```
 
+To run query4.py you need to provide 1 argument: df/sql/rdd_broadcast/rdd_repartition
+
+```
+spark-submit query4.py rdd_repartition
+spark-submit query4.py rdd_broadcast
+spark-submit query4.py df
+spark-submit query4.py sql
+```
