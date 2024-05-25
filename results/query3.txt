@@ -74,29 +74,33 @@ time elapsed 32.37467551231384
 # top/bot hint_crimes_revgeo hint_revgeo_income
 
 # top optimal(BroadcastHashJoin BuildRight) optimal(BroadcastHashJoin BuildRight)
-- time elapsed 38.61370348930359
-- pyspark history server 42 s
+- time elapsed 35.7794 s
+- pyspark history server 39 s
+
+# bot optimal optimal
+- time elapsed 36.1886 s 
+- pyspark history server 40 s
 
 # top merge optimal(BroadcastHashJoin)
-- time elapsed 37.06198525428772
-- pyspark history server 40 s
+- time elapsed 37.2087 s 
+- pyspark history server 41 s
 
 # top shuffle_hash(BuildRight) optimal(BroadcastHashJoin BuildRight)
-- time elapsed 47.81620264053345
-- pyspark history server 51 s
+- time elapsed 35.45529 s
+- pyspark history server 39 s
 
 # top shuffle_replicate_nl(does crossjoin) optimal(BroadcastHashJoin BuildRight)
-- time elapsed 427.820237159729
-- pyspark history server 7.2 min
+- time elapsed 354.9399 s
+- pyspark history server 6.0 min
 
 # top optimal merge
-- time elapsed 42.91420221328735
-- pyspark history server 47 s
+- time elapsed 38.1895 s
+- pyspark history server 42 s
 
 # top optimal shuffle_hash
-- time elapsed 36.15712547302246
-- pyspark history server 40 s
+- time elapsed 37.1745 s
+- pyspark history server 41 s
 
 # top optimal shuffle_replicate_nl(also does CartesianProduct but it's smaller)
-- time elapsed 44.6536500453949
-- pyspark history server 48 s
+- time elapsed 40.2540 s
+- pyspark history server 44 s

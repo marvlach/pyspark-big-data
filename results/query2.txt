@@ -1,6 +1,3 @@
-# spark-submit query2.py rdd
-# time elapsed 113.99748516082764
-# spark history server 2.0 min
 [
     ('NIGHT: 2100 - 0459', 243374), 
     ('EVENING: 1700 - 2059', 191792), 
@@ -8,28 +5,24 @@
     ('MORNING: 0500 - 1159', 126611)
 ]
 
++--------------------+------+
+|         time_period| count|
++--------------------+------+
+|  NIGHT: 2100 - 0459|243374|
+|EVENING: 1700 - 2059|191792|
+|AFTERNOON: 1200 -...|151564|
+|MORNING: 0500 - 1159|126611|
++--------------------+------+
+
+# spark-submit query2.py rdd
+# time elapsed 113.9974
+# spark history server 2.0 min
+
 # spark-submit query2.py sql
-# time elapsed 55.47707676887512
+# time elapsed 55.4770
 # spark history server 59 s
-+--------------------+------+
-|         time_period| count|
-+--------------------+------+
-|  NIGHT: 2100 - 0459|243374|
-|EVENING: 1700 - 2059|191792|
-|AFTERNOON: 1200 -...|151564|
-|MORNING: 0500 - 1159|126611|
-+--------------------+------+
 
-
-# spark-submit query2.py sql
-# time elapsed 56.508763551712036
+# spark-submit query2.py df
+# time elapsed 56.5087
 # spark history server 1.0 min
-+--------------------+------+
-|         time_period| count|
-+--------------------+------+
-|  NIGHT: 2100 - 0459|243374|
-|EVENING: 1700 - 2059|191792|
-|AFTERNOON: 1200 -...|151564|
-|MORNING: 0500 - 1159|126611|
-+--------------------+------+
 

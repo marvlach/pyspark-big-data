@@ -50,18 +50,17 @@
 ]
 
 # sql
-# time elapsed 48.80102896690369
-# spark history server 52 s
-
+# time elapsed 47.5011 s
+# spark history server 51 s
 
 # df
-# time elapsed 36.46352410316467
-# spark history server 40 s
+# time elapsed 49.0518 s
+# spark history server 53 s
 
 # rdd_broadcast
-# time elapsed 72.668630361557
-# spark history server 1.3 min
+# time elapsed 88.5539 s
+# spark history server 1.5 min
 
 # rdd_repartition
-# time elapsed 67.56783175468445
-# spark history server 1.2 min
+# time elapsed 88.0714 s
+# spark history server 1.6 min
