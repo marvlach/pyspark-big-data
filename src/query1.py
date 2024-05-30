@@ -31,12 +31,15 @@ def read_from_parquet(spark):
     Reads parquet chunks from 2 hdfs directories
     and returns a dataframe
     """
-    paths = [
+    df1 = spark.read.parquet(
         "hdfs://master:9000/home/user/datasets/crime_data_2010s.parquet",
+    )
+    df2 = spark.read.parquet(
         "hdfs://master:9000/home/user/datasets/crime_data_2020s.parquet",
-    ]
-    df = spark.read.parquet(*paths)
-    return df
+    )
+
+    df_union = df1.union(df2)
+    return df_union
 
 
 def query_rdd(df):
@@ -128,9 +131,7 @@ def query_df(df):
     """
     result = (
         (
-            df.withColumns(
-                {"year": df["DATE OCC"][7:4], "month": df["DATE OCC"][0:2]}
-            )
+            df.withColumns({"year": df["DATE OCC"][7:4], "month": df["DATE OCC"][0:2]})
             .select(col("year"), col("month"))
             .groupBy(col("year"), col("month"))
             .count()

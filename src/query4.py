@@ -11,12 +11,16 @@ def get_distance_diff(lat1, long1, lat2, long2):
 
 
 def get_crimes_df(spark):
-    paths = [
+    df1 = spark.read.parquet(
         "hdfs://master:9000/home/user/datasets/crime_data_2010s.parquet",
+    )
+    df2 = spark.read.parquet(
         "hdfs://master:9000/home/user/datasets/crime_data_2020s.parquet",
-    ]
-    crimes_df = spark.read.parquet(*paths)
-    return crimes_df
+    )
+
+    df_union = df1.union(df2)
+    return df_union
+
 
 
 def get_police_station_df(spark):
